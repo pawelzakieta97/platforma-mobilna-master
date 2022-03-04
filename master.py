@@ -1,4 +1,5 @@
 import time
+import threading
 
 STEERING_SERVO_CHANNEL = 7
 PWM_FREQUENCY = 60
@@ -7,7 +8,7 @@ STEERING_SERVO_MIN_PULSE = 0.001
 STEERING_SERVO_MAX_PULSE = 0.002
 DRIVE_POWER_MIN_PULSE = 0.001
 DRIVE_POWER_MAX_PULSE = 0.002
-DRIVE_POWER_CHANNEL = 1
+DRIVE_POWER_CHANNEL = 6
 DRIVE_POWER_FREQ = 60
 
 
@@ -23,10 +24,6 @@ class MobilePlatform:
             self.i2c = busio.I2C(board.SCL, board.SDA)
             self.pca = adafruit_pca9685.PCA9685(self.i2c)
             self.pca.frequency = 60
-            # GPIO.setwarnings(False)  # disable warnings
-            # GPIO.setmode(GPIO.BCM)  # set pin numbering system
-            # GPIO.setup(STEERING_SERVO_PIN, GPIO.OUT)
-            # GPIO.setup(DRIVE_POWER_PIN, GPIO.OUT)
             self.steering_servo_pwm = self.pca.channels[STEERING_SERVO_CHANNEL]
             # self.steering_servo_pwm.start(0.0015 * STEERING_SERVO_FREQ)
             self.drive_power_pwm = self.pca.channels[DRIVE_POWER_CHANNEL]
@@ -69,6 +66,7 @@ class MobilePlatform:
 
     def __del__(self):
         if not self.mock_pwm_output:
+            print('deiniting')
             self.pca.deinit()
 
     def arm(self):
